@@ -17,6 +17,8 @@ services:
 
   testable-lambda-example:
     image: testable-lambda-example:latest
+    ports:
+      - "1339:80"
     environment:
       <<: *shared-env
     depends_on:
@@ -33,7 +35,7 @@ services:
       - localstack
 
   localstack:
-    image: localstack/localstack
+    image: localstack/localstack:0.12.12
     ports:
       - '4566:4566'
     environment:
