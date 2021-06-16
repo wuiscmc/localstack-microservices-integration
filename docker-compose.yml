@@ -1,0 +1,48 @@
+x-shared-env-vars: &shared-env
+  BUCKET: my-awesome-bucket
+  TEST_MODE: 1
+  AWS_REGION: eu-west-1
+
+services:
+  testable-microservices:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "1337:80"
+    environment:
+      <<: *shared-env
+    depends_on:
+      - localstack
+
+  testable-lambda-example:
+    image: testable-lambda-example:latest
+    environment:
+      <<: *shared-env
+    depends_on:
+      - localstack
+
+  provisioning:
+    build:
+      context: docker/provisioning
+    ports:
+      - '1338:80'
+    environment:
+      <<: *shared-env
+    depends_on:
+      - localstack
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - '4566:4566'
+    environment:
+      SERVICES: lambda,s3
+      DOCKER_HOST: unix:///var/run/docker.sock
+      LAMBDA_EXECUTOR: docker
+      DEBUG: 1
+      AWS_REGION: eu-west-1
+      DEFAULT_REGION: eu-west-1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
