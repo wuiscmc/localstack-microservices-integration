@@ -7,7 +7,8 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT_EXTERNAL || 80;
 
-const BUCKET = process.env.BUCKET || 'test-bucket';
+const SRC_BUCKET = process.env.SRC_BUCKET;
+const DEST_BUCKET = process.env.DEST_BUCKET;
 
 let S3;
 
@@ -28,24 +29,12 @@ const getS3Conn = () => {
 
 
 const createSourceMapping = async (arn) => {
-  await axios.post(`http://testable-lambda-example/createSourceMapping?arn=${arn}`);
+  await axios.post(`http://lambda/createSourceMapping?arn=${arn}`);
   console.log(`DONE: Mapping created for ${arn}`);
 }
 
-const createBucket = async () => {
-  try {
-    await getS3Conn().createBucket({
-      Bucket: BUCKET
-    }).promise();
-
-    console.log('bucket created');
-  } catch(error) {
-    console.log('Error creating bucket, might already exist');
-  }
-}
-
-const createBucketNotificationConfiguration = async () => {
-  const response = await axios.get(`http://testable-lambda-example/arn`);
+const getLambdaArn = async () => {
+  const response = await axios.get(`http://lambda/arn`);
   console.log(`Lambda arn: ${JSON.stringify(response.data)}`);
   const {data: {arn}} = response;
 
@@ -54,19 +43,35 @@ const createBucketNotificationConfiguration = async () => {
     return false;
   }
 
+  return arn;
+}
+
+
+const createBucket = async (Bucket) => {
+  try {
+    await getS3Conn().createBucket({ Bucket }).promise();
+
+    console.log('bucket created');
+  } catch(error) {
+    console.log('Error creating bucket, might already exist');
+    console.log(error);
+  }
+}
+
+const createBucketNotificationConfiguration = async (Bucket, LambdaFunctionArn) => {
   await getS3Conn().putBucketNotificationConfiguration({
-    Bucket: BUCKET,
+    Bucket,
     NotificationConfiguration: {
       LambdaFunctionConfigurations: [
         {
           Events: [ 's3:ObjectCreated:* ' ],
-          LambdaFunctionArn: arn
+          LambdaFunctionArn
         },
       ],
     }
   }).promise();
 
-  console.log('created configuration notification for ', BUCKET);
+  console.log('created configuration notification for ', Bucket);
 }
 
 
@@ -74,8 +79,12 @@ const provisionService = async ({sourceMappingArn}) => {
   if(sourceMappingArn) {
     await createSourceMappings(sourceMappingArn);
   }
-  await createBucket();
-  await createBucketNotificationConfiguration();
+
+  await createBucket(SRC_BUCKET);
+  await createBucket(DEST_BUCKET);
+  const lambdaArn = await getLambdaArn();
+
+  await createBucketNotificationConfiguration(SRC_BUCKET, lambdaArn);
 }
 
 app.get('/healthcheck', (_req, res) => {

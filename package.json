@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
+    "start": "node .",
+    "test": "node_modules/.bin/jest ."
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,9 @@
     "aws-sdk": "^2.929.0",
     "axios": "^0.21.1",
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "jest": "^27.0.4",
+    "moment": "^2.29.1"
   }
 }
