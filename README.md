@@ -31,3 +31,5 @@ The reason is to encapsulate all this logic outside the service as it does not b
 > aws --endpoint-url=http://localhost:4566 s3 ls s3://my-awesome-bucket/
 2021-06-16 23:15:58         55 blahonga
 ```
+## Flow
+![Alt](flow.png)
