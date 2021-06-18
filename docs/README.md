@@ -1,8 +1,8 @@
 # localstack-microservices-integration
 
-This service uploads a file to S3. Also after each upload a lambda is triggered to create a backup file in another bucket. 
+This service uploads a file to S3. Also after each upload a lambda is triggered to create a backup file in another bucket.
 
-## Provisioning 
+## Provisioning
 
 Provisioning service is included for offline-testing purposes. Its duties are:
 
@@ -10,7 +10,7 @@ Provisioning service is included for offline-testing purposes. Its duties are:
 2. to fetch the ARN of the lambda
 3. to create the notification configuration of the bucket
 
-The reason is to encapsulate all this logic outside the service as it does not belong there. 
+The reason is to encapsulate all this logic outside the service as it does not belong there.
 
 ## Example
 
@@ -32,14 +32,14 @@ The reason is to encapsulate all this logic outside the service as it does not b
 
 ## Dependencies
 
-### Lambda 
+### Lambda
 
 Repo: https://github.com/wuiscmc/e2e-testable-lambda
 
 Once cloned, build the image
 ```bash
 > make docker-build
-``` 
+```
 
 ## FAQ
 
@@ -49,9 +49,10 @@ Make sure you are setting the `AWS_REGION` environment variable, for each contai
 ### The lambda does not get triggered despite having registered the notification from S3
 Very likely because the lambda has not been created in the same region. Set the `DEFAULT_REGION` env var from localstack and point it to the same region as `AWS_REGION`.
 
-### The lambda gets triggered but it gets stuck and times out 
+### The lambda gets triggered but it gets stuck and times out
 By default, localstack spins up the lambdas in separate docker containers and that they can not access any resources from the network the rest of the services are runnning in. This means that the lambdas by default do not have access to localstack, so to easily address this issue set the `LAMBDA_DOCKER_NETWORK` to point the default network created by docker-compose, usually this is `<repo>_default` but you can check this out by using ```docker network ls```
 
 ## Flow
 
 ![Alt](flow.png)
+![Alt](test-runner-flow.png)
