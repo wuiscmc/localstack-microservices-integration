@@ -1,8 +1,6 @@
 # localstack-microservices-integration
 
-This service uploads a file to S3. 
-
-This is the main service of a distributed architecture in which for each upload to S3, a lambda should be triggered. 
+This service uploads a file to S3. Also after each upload a lambda is triggered to create a backup file in another bucket. 
 
 ## Provisioning 
 
