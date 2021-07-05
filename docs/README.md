@@ -30,6 +30,13 @@ The reason is to encapsulate all this logic outside the service as it does not b
 2021-06-16 23:15:58         55 blahonga
 ```
 
+### Running the test(s)
+
+```sh
+# run the service
+> make integration-test
+```
+
 ## Dependencies
 
 ### Lambda
